@@ -10,10 +10,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     authButton.addEventListener("click", () => {
         modalAuth.style.display = "flex";
+        document.body.style.overflow = "hidden";
+        resetInputBorders();
     });
 
-    closeAuthButton.addEventListener("click", () => {
-        modalAuth.style.display = "none";
+    closeAuthButton.addEventListener("click", closeModal);
+
+    modalAuth.addEventListener("click", (event) => {
+        if (event.target === modalAuth) {
+            closeModal();
+        }
     });
 
     if (localStorage.getItem("login")) {
@@ -23,33 +29,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     loginForm.addEventListener("submit", (event) => {
-		event.preventDefault();
-		const login = loginInput.value.trim();
-		const password = passwordInput.value.trim();
+        event.preventDefault();
+        const login = loginInput.value.trim();
+        const password = passwordInput.value.trim();
 
-		if (login && password) {
-			localStorage.setItem("login", login);
-			displayLoggedIn(login);
-			modalAuth.style.display = "none";
-		} else {
-			if (!login) loginInput.style.borderColor = "red";
-			if (!password) passwordInput.style.borderColor = "red";
-			alert("Будь ласка, введіть логін та пароль.");
-		}
-	});
-
+        if (login && password) {
+            localStorage.setItem("login", login);
+            displayLoggedIn(login);
+            closeModal();
+        } else {
+            if (!login) loginInput.style.borderColor = "red";
+            if (!password) passwordInput.style.borderColor = "red";
+            alert("Будь ласка, введіть логін та пароль.");
+        }
+    });
 
     logoutButton.addEventListener("click", () => {
         localStorage.removeItem("login");
         displayLoggedOut();
     });
 
+    function closeModal() {
+        modalAuth.style.display = "none";
+        document.body.style.overflow = "";
+        resetInputBorders();
+    }
+
+    function resetInputBorders() {
+        loginInput.style.borderColor = "";
+        passwordInput.style.borderColor = "";
+    }
+
     function displayLoggedIn(login) {
         authButton.style.display = "none";
         logoutButton.style.display = "inline-block";
         userNameSpan.textContent = login;
         userNameSpan.style.display = "inline";
-        loginInput.style.borderColor = "";
+        loginInput.value = "";
+        passwordInput.value = "";
     }
 
     function displayLoggedOut() {
