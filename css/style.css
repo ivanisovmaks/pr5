@@ -568,6 +568,56 @@ button {
     line-height: 23px;
 }
 
+
+
+.slider-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    background: #fff1b8;
+	margin: 0 0 20px 0;
+}
+
+.swiper {
+    width: 100%;
+    height: 400px;
+    position: relative;
+}
+
+.swiper-slide {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    padding: 20px;
+}
+
+.promo-text1 {
+    position: relative;
+    z-index: 2;
+    color: #333;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: 5px;
+    max-width: 50%;
+	margin-bottom: -100px;
+}
+
+.swiper-slide img {
+    width: 77%;
+    height: auto;
+    object-fit: cover;
+    margin-left: 282px; 
+    z-index: 1; 
+    position: relative; 
+}
+
+
+
+
 @media (max-width: 1366px) {
     .container {
         max-width: 960px;
