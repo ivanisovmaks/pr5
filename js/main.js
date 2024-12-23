@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const menuContainer = document.getElementById('menuContainer');
             const restaurantTitle = document.querySelector('.restaurant-title');
             const restaurantInfo = document.querySelector('.restaurant-info'); 
-    
+
             const authModal = document.getElementById('authModal');
             const authButton = document.getElementById('authButton');
             const logoutButton = document.getElementById('logoutButton');
@@ -17,8 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const passwordInput = document.getElementById('password');
             const loginName = document.getElementById('loginName');
             const userLogin = document.getElementById('userLogin');
+            const searchInput = document.querySelector('.input-search');
     
-        
+            
             function showAuthModal() {
                 resetInputFields();
                 authModal.style.display = 'block';
@@ -230,8 +231,95 @@ document.addEventListener('DOMContentLoaded', function () {
     
            
             renderRestaurants();
-    
-          
+
+            // Пошук страв і ресторанів
+            function performSearch(query) {
+                query = query.trim().toLowerCase();
+
+                if (!query) {
+                    searchInput.style.borderColor = 'red';
+                    setTimeout(() => {
+                        searchInput.style.borderColor = '';
+                    }, 2000);
+                    return;
+                }
+
+                restaurantsContainer.innerHTML = '';
+
+                const results = [];
+
+                restaurantsData.forEach((restaurant) => {
+                    // Пошук серед ресторанів
+                    if (restaurant.name.toLowerCase().includes(query)) {
+                        results.push({
+                            type: 'restaurant',
+                            data: restaurant,
+                        });
+                    }
+
+                    // Пошук серед страв у меню
+                    fetch(restaurant.products)
+                        .then(response => response.json())
+                        .then(menuData => {
+                            menuData.forEach((dish) => {
+                                if (dish.name.toLowerCase().includes(query)) {
+                                    results.push({
+                                        type: 'dish',
+                                        data: {
+                                            restaurantName: restaurant.name,
+                                            dish: dish,
+                                        },
+                                    });
+                                }
+                            });
+
+                            // Рендер результатів пошуку
+                            renderSearchResults(results);
+                        });
+                });
+            }
+
+            function renderSearchResults(results) {
+                if (results.length === 0) {
+                    restaurantsContainer.innerHTML = `<p>Нічого не знайдено</p>`;
+                    return;
+                }
+
+                results.forEach((result) => {
+                    if (result.type === 'restaurant') {
+                        const restaurant = result.data;
+                        restaurantsContainer.innerHTML += `
+                            <div class="card">
+                                <img src="${restaurant.image}" alt="${restaurant.name}" class="card-image" />
+                                <div class="card-text">
+                                    <h3 class="card-title">${restaurant.name}</h3>
+                                    <p>Кухня: ${restaurant.kitchen}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else if (result.type === 'dish') {
+                        const { restaurantName, dish } = result.data;
+                        restaurantsContainer.innerHTML += `
+                            <div class="card">
+                                <img src="${dish.image}" alt="${dish.name}" class="card-image" />
+                                <div class="card-text">
+                                    <h3 class="card-title">${dish.name}</h3>
+                                    <p>${dish.description}</p>
+                                    <p>Ресторан: ${restaurantName}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            searchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    performSearch(searchInput.value);
+                }
+            });
+
             if (window.location.pathname.includes("restaurant.html")) {
                 renderMenu();
             }
